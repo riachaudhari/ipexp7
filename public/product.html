@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Product Details</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <div id="product-detail">
+    <h2>Loading...</h2>
+  </div>
+
+  <script>
+    // Fetch the product ID from the URL
+    const productId = window.location.pathname.split('/').pop();
+
+    // Fetch product details from the server
+    const fetchProductDetails = async () => {
+      try {
+        const response = await fetch(`/api/product-details/${productId}`);
+        const product = await response.json();
+
+        const productDetailDiv = document.getElementById('product-detail');
+        
+        // If product does not exist, show an error message
+        if (!product || response.status === 404) {
+          productDetailDiv.innerHTML = `<h2>Product Not Found</h2>`;
+          return;
+        }
+
+        // Render product details
+        productDetailDiv.innerHTML = `
+          <h2>${product.name}</h2>
+          <img src="${product.image}" alt="${product.name}">
+          <p><strong>Price:</strong> $${product.price}</p>
+          <p>${product.desc}</p>
+          <a href="/">Back to Products</a>
+        `;
+      } catch (error) {
+        console.error('Error fetching product details:', error);
+        document.getElementById('product-detail').innerHTML = `<h2>Error loading product</h2>`;
+      }
+    };
+
+    // Fetch product details when the page loads
+    fetchProductDetails();
+  </script>
+</body>
+</html>
